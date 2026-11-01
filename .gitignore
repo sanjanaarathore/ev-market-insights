@@ -1,0 +1,42 @@
+# Python & Virtual Environments
+__pycache__/
+*.py[cod]
+*$py.class
+*.env
+.venv/
+env/
+venv/
+ENV/
+
+# System & OS
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
+
+# Redundant raw archive and intermediate working directories
+# Note: Complete, pristine dataset copies are versioned in Electric_Vehicle_Market_Insights/Dataset/
+archive.zip
+archive/
+cleaned_data/
+deliverables/
+
+# Intermediate root copies (already curated inside Electric_Vehicle_Market_Insights/)
+/cleaned_ev_dataset.csv
+/dataset_profile.csv
+/data_quality_report.txt
+/ev_eda_summary.txt
+/tableau_data_dictionary.xlsx
+/tableau_visualization_specification.md
+/dashboard_layout_plan.md
+/filter_implementation_guide.md
+/tableau_testing_checklist.md
+/chart_wise_analytical_findings.md
+/tableau_story_structure.md
+/ev_eda_analysis.ipynb
+
+# IDE & Editor Settings
+.vscode/
+.idea/
+*.swp
+*.swo

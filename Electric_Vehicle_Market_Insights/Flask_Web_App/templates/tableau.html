@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Tableau Public Visualizations | EV Market Performance & Insights{% endblock %}
+
+{% block content %}
+<section class="page-header-section">
+    <div class="section-container">
+        <span class="section-tag"><i class="fa-solid fa-chart-pie"></i> Visual Analytics</span>
+        <h1 class="page-title">Tableau Public Dashboard &amp; Story Viewer</h1>
+        <p class="page-subtitle">Full-screen interactive analytics powered by Tableau's Official Embedding API v3.</p>
+    </div>
+</section>
+
+<section class="tableau-view-section">
+    <div class="section-container">
+        <!-- Interactive Mode Switcher -->
+        <div class="view-switcher-bar">
+            <div class="switcher-buttons">
+                <button class="view-btn active" id="btnShowDashboard">
+                    <i class="fa-solid fa-chart-column"></i> Master Dashboard (1440x900)
+                </button>
+                <button class="view-btn" id="btnShowStory">
+                    <i class="fa-solid fa-book-open"></i> Guided Story (7 Scenes)
+                </button>
+            </div>
+            <div class="switcher-actions">
+                <a href="https://public.tableau.com" target="_blank" class="btn-outline-sm">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Open in Tableau Public
+                </a>
+            </div>
+        </div>
+
+        <!-- Tableau Dashboard Container -->
+        <div class="embed-box" id="dashboardEmbedBox">
+            <div class="embed-card-header">
+                <h3><i class="fa-solid fa-sliders"></i> Master Executive Dashboard: Market Performance &amp; Insights</h3>
+                <span class="live-status"><i class="fa-solid fa-circle"></i> Embed Container Ready</span>
+            </div>
+            <div class="embed-viz-wrapper">
+                <tableau-viz id="fullDashboardViz"
+                    src="{{ tableau.dashboard_url }}"
+                    device="default"
+                    toolbar="bottom"
+                    hide-tabs="false">
+                </tableau-viz>
+            </div>
+        </div>
+
+        <!-- Tableau Story Container (Hidden by default) -->
+        <div class="embed-box d-none" id="storyEmbedBox">
+            <div class="embed-card-header">
+                <h3><i class="fa-solid fa-book-bookmark"></i> Global EV Market Evolution (7-Scene Guided Story)</h3>
+                <span class="live-status"><i class="fa-solid fa-circle"></i> Story Container Ready</span>
+            </div>
+            <div class="embed-viz-wrapper">
+                <tableau-viz id="fullStoryViz"
+                    src="{{ tableau.story_url }}"
+                    device="default"
+                    toolbar="bottom"
+                    hide-tabs="false">
+                </tableau-viz>
+            </div>
+        </div>
+
+        <!-- Publication Guide & Instructions Accordion -->
+        <div class="guide-card mt-4">
+            <div class="guide-header">
+                <h4><i class="fa-solid fa-circle-question"></i> How to Publish Your Dashboard to Tableau Public</h4>
+            </div>
+            <div class="guide-steps-grid">
+                <div class="g-step">
+                    <div class="step-num">1</div>
+                    <h5>Open Workbook</h5>
+                    <p>Open Tableau Desktop / Public and load your completed EV Market dashboard.</p>
+                </div>
+                <div class="g-step">
+                    <div class="step-num">2</div>
+                    <h5>Sign In</h5>
+                    <p>Go to <strong>Server</strong> -> <strong>Tableau Public</strong> -> <strong>Sign In...</strong></p>
+                </div>
+                <div class="g-step">
+                    <div class="step-num">3</div>
+                    <h5>Save to Public</h5>
+                    <p>Click <strong>Server</strong> -> <strong>Tableau Public</strong> -> <strong>Save to Tableau Public As...</strong></p>
+                </div>
+                <div class="g-step">
+                    <div class="step-num">4</div>
+                    <h5>Copy &amp; Embed</h5>
+                    <p>Copy the shareable link and paste it into this app via <em>"Configure Embed URL"</em> on the home page.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+

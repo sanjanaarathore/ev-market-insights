@@ -1,0 +1,433 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-container">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fa-solid fa-earth-americas"></i> Comprehensive Global Market Intelligence
+            </div>
+            <h1 class="hero-title">ELECTRIC VEHICLE MARKET PERFORMANCE &amp; INSIGHTS</h1>
+            <p class="hero-subtitle">
+                A Data-Driven Exploration of Global EV Manufacturing, Technology Adoption, Economic Feasibility and Fleet Decarbonization Dynamics.
+            </p>
+            <div class="hero-cta-group">
+                <a href="#dashboard" class="btn-primary-lg">
+                    <i class="fa-solid fa-chart-line"></i> Explore Dashboard
+                </a>
+                <a href="#findings" class="btn-secondary-lg">
+                    <i class="fa-solid fa-lightbulb"></i> Key Analytical Findings
+                </a>
+                <a href="{{ url_for('compare_view') }}" class="btn-outline-lg">
+                    <i class="fa-solid fa-code-compare"></i> Compare Segments
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Executive KPI Scorecard Container -->
+<section class="kpi-section">
+    <div class="section-container">
+        <div class="section-header text-center">
+            <span class="section-tag">Empirical Baseline</span>
+            <h2 class="section-title">Fleet Scale &amp; Market Performance at a Glance</h2>
+            <p class="section-desc">Calculated directly across 299,999 validated electric vehicle records globally.</p>
+        </div>
+        <div class="kpi-grid">
+            <div class="kpi-card card-navy">
+                <div class="kpi-icon"><i class="fa-solid fa-car"></i></div>
+                <div class="kpi-value">{{ kpis.total_records }}</div>
+                <div class="kpi-label">TOTAL VEHICLE RECORDS</div>
+                <div class="kpi-subtext">{{ kpis.unique_models }} Unique Commercial Models</div>
+            </div>
+            <div class="kpi-card card-blue">
+                <div class="kpi-icon"><i class="fa-solid fa-industry"></i></div>
+                <div class="kpi-value">{{ kpis.total_manufacturers }}</div>
+                <div class="kpi-label">ACTIVE MANUFACTURERS (OEMs)</div>
+                <div class="kpi-subtext">Competitive Global Spread</div>
+            </div>
+            <div class="kpi-card card-green">
+                <div class="kpi-icon"><i class="fa-solid fa-star"></i></div>
+                <div class="kpi-value">{{ kpis.avg_rating }} ★</div>
+                <div class="kpi-label">AVG CUSTOMER RATING</div>
+                <div class="kpi-subtext">1.0 to 5.0 Star Scale</div>
+            </div>
+            <div class="kpi-card card-cyan">
+                <div class="kpi-icon"><i class="fa-solid fa-gauge-high"></i></div>
+                <div class="kpi-value">{{ kpis.avg_range }}</div>
+                <div class="kpi-label">AVG DRIVING RANGE</div>
+                <div class="kpi-subtext">Single-Charge Certified</div>
+            </div>
+            <div class="kpi-card card-purple">
+                <div class="kpi-icon"><i class="fa-solid fa-car-battery"></i></div>
+                <div class="kpi-value">{{ kpis.avg_battery }}</div>
+                <div class="kpi-label">AVG BATTERY CAPACITY</div>
+                <div class="kpi-subtext">High-Voltage Traction Pack</div>
+            </div>
+            <div class="kpi-card card-amber">
+                <div class="kpi-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                <div class="kpi-value">{{ kpis.total_sales }}</div>
+                <div class="kpi-label">TOTAL ANNUAL SALES</div>
+                <div class="kpi-subtext">Fleet Cumulative Deliveries</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Project Overview & Objectives -->
+<section class="overview-section" id="overview">
+    <div class="section-container">
+        <div class="grid-2col">
+            <div class="overview-card">
+                <div class="card-tag"><i class="fa-solid fa-bullseye"></i> Problem Statement</div>
+                <h3>Understanding the Multi-Polar EV Industrial Landscape</h3>
+                <p>
+                    The global electric vehicle transition is accelerating across consumer and commercial sectors. However, automotive stakeholders face fragmented intelligence regarding cross-manufacturer competitiveness, real-world battery longevity, manufacturing trade flows, and the economic determinants of price.
+                </p>
+                <p>
+                    This project addresses this critical gap through a rigorous, full-lifecycle empirical analysis—spanning dataset quality auditing, domain-grounded preprocessing, interactive Tableau dashboarding, and cloud-ready web deployment.
+                </p>
+            </div>
+            <div class="overview-card">
+                <div class="card-tag"><i class="fa-solid fa-list-check"></i> Project Objectives</div>
+                <h3>Core Analytical Mandates</h3>
+                <ul class="objective-list">
+                    <li><i class="fa-solid fa-check"></i> <strong>Manufacturer Benchmarking:</strong> Evaluate portfolio diversity and sales across 200 global OEMs.</li>
+                    <li><i class="fa-solid fa-check"></i> <strong>Category Stratification:</strong> Analyze performance across 15 vehicle body categories from scooters to transit buses.</li>
+                    <li><i class="fa-solid fa-check"></i> <strong>Battery Chemistry Longevity:</strong> Compare cycle life and degradation across NMC, LFP, NCA, Sodium-Ion, and Solid-State cells.</li>
+                    <li><i class="fa-solid fa-check"></i> <strong>Economic Feasibility:</strong> Model retail MSRP cost determinants against battery capacity and range.</li>
+                    <li><i class="fa-solid fa-check"></i> <strong>Climate Impact Assessment:</strong> Quantify net carbon abatement (tons CO2 saved per vehicle per year vs ICE).</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Tableau Public Dashboard Embedding Section -->
+<section class="tableau-section" id="dashboard">
+    <div class="section-container">
+        <div class="section-header">
+            <div class="header-left">
+                <span class="section-tag"><i class="fa-solid fa-chart-column"></i> Primary Visualization Platform</span>
+                <h2 class="section-title">Interactive Tableau Public Dashboard</h2>
+                <p class="section-desc">Master Business Intelligence Cockpit: "ELECTRIC VEHICLE MARKET PERFORMANCE &amp; INSIGHTS"</p>
+            </div>
+            <div class="header-right">
+                <button class="btn-config" id="btn-configure-tableau">
+                    <i class="fa-solid fa-gear"></i> Configure Embed URL
+                </button>
+            </div>
+        </div>
+
+        <!-- Official Tableau Embed Component -->
+        <div class="tableau-embed-card">
+            <!-- Notice Banner for Published URL Configuration -->
+            <div class="tableau-url-banner" id="url-banner">
+                <div class="banner-icon"><i class="fa-solid fa-circle-info"></i></div>
+                <div class="banner-text">
+                    <strong>Tableau Public Connection Status:</strong> Live Embedding Ready. 
+                    To point this live container to your own published Tableau Public workbook, click <em>"Configure Embed URL"</em> above or paste your public URL.
+                </div>
+            </div>
+
+            <!-- Tableau Visualization Container using Tableau Embedding API v3 -->
+            <div class="tableau-container-wrapper" id="tableauContainer">
+                <tableau-viz id="tableauViz"
+                    src="https://public.tableau.com/views/ElectricVehicleMarketPerformance/Dashboard"
+                    device="default"
+                    toolbar="bottom"
+                    hide-tabs="false">
+                </tableau-viz>
+            </div>
+
+            <!-- Fallback Interactive Preview Mock for offline / pre-publishing review -->
+            <div class="tableau-fallback-panel" id="fallbackPanel">
+                <div class="fallback-header">
+                    <h4><i class="fa-solid fa-display"></i> Dashboard Layout Preview Architecture</h4>
+                    <span class="badge-status">Visual Layout Blueprint (1440x900)</span>
+                </div>
+                <div class="fallback-grid">
+                    <div class="mock-card mock-span-2">
+                        <h5><i class="fa-solid fa-chart-bar"></i> Viz 2: Category Performance &amp; Distribution</h5>
+                        <p class="mock-data">Two-Wheeler Scooters (29,478) &bull; Sedans (25,851) &bull; Hatchbacks (25,713) &bull; Compact SUVs (25,706)</p>
+                        <div class="mock-bar-container">
+                            <div class="mock-bar" style="width: 100%;"><span>Scooters: 29.5k</span></div>
+                            <div class="mock-bar" style="width: 87%;"><span>Sedans: 25.8k</span></div>
+                            <div class="mock-bar" style="width: 87%;"><span>Hatchbacks: 25.7k</span></div>
+                            <div class="mock-bar" style="width: 87%;"><span>Compact SUVs: 25.7k</span></div>
+                            <div class="mock-bar" style="width: 44%;"><span>Electric Buses: 12.9k</span></div>
+                        </div>
+                    </div>
+                    <div class="mock-card">
+                        <h5><i class="fa-solid fa-circle-notch"></i> Viz 3: OEM Market Share Donut</h5>
+                        <p class="mock-data">VoltWorks (1,627) &bull; VelocityGroup (1,611) &bull; CircuitWorks (1,597)</p>
+                        <div class="mock-donut-preview">
+                            <div class="donut-circle">
+                                <div class="donut-inner">
+                                    <strong>200</strong>
+                                    <span>OEMs</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mock-card">
+                        <h5><i class="fa-solid fa-chart-line"></i> Viz 5: Annual Sales Trend</h5>
+                        <p class="mock-data">Stable 255M–265M Units / Model Release Vintage (2018–2026)</p>
+                        <div class="mock-sparkline">
+                            <span class="spark-pt">2018: 258M</span> &rarr;
+                            <span class="spark-pt highlight">2019: 265M</span> &rarr;
+                            <span class="spark-pt">2024: 264M</span> &rarr;
+                            <span class="spark-pt">2026: 257M</span>
+                        </div>
+                    </div>
+                    <div class="mock-card">
+                        <h5><i class="fa-solid fa-chart-pie"></i> Viz 6: Battery Chemistry Share</h5>
+                        <p class="mock-data">NMC (33.8%) &bull; LFP (32.1%) &bull; NCA (17.1%) &bull; Sodium-Ion (10.0%) &bull; Solid-State (7.0%)</p>
+                        <div class="mock-pill-list">
+                            <span class="chem-pill nmc">NMC: 101.5k</span>
+                            <span class="chem-pill lfp">LFP: 96.1k</span>
+                            <span class="chem-pill nca">NCA: 51.3k</span>
+                            <span class="chem-pill sod">Sodium: 29.9k</span>
+                            <span class="chem-pill sol">Solid-State: 21.1k</span>
+                        </div>
+                    </div>
+                    <div class="mock-card">
+                        <h5><i class="fa-solid fa-star-half-stroke"></i> Viz 4: Customer Satisfaction</h5>
+                        <p class="mock-data">Fleet Average: 4.09★ (Range: 4.085★ – 4.094★)</p>
+                        <div class="mock-rating-meter">
+                            <div class="meter-fill" style="width: 81.8%;"><span>4.09 / 5.0 Stars</span></div>
+                        </div>
+                    </div>
+                    <div class="mock-card mock-span-3">
+                        <h5><i class="fa-solid fa-earth-americas"></i> Viz 7: Manufacturing Country Assembly Footprint</h5>
+                        <p class="mock-data">India (30.3k) &bull; South Korea (30.2k) &bull; China (30.1k) &bull; Vietnam (30.0k) &bull; USA (30.0k) &bull; France (30.0k) &bull; Germany (29.9k) &bull; UK (29.9k) &bull; Sweden (29.8k) &bull; Japan (29.8k)</p>
+                        <div class="country-grid">
+                            <span class="c-badge"><i class="fa-solid fa-industry"></i> India: 10.1%</span>
+                            <span class="c-badge"><i class="fa-solid fa-industry"></i> S. Korea: 10.1%</span>
+                            <span class="c-badge"><i class="fa-solid fa-industry"></i> China: 10.1%</span>
+                            <span class="c-badge"><i class="fa-solid fa-industry"></i> Vietnam: 10.0%</span>
+                            <span class="c-badge"><i class="fa-solid fa-industry"></i> USA: 10.0%</span>
+                            <span class="c-badge"><i class="fa-solid fa-industry"></i> Europe (4 hubs): 29.9%</span>
+                            <span class="c-badge"><i class="fa-solid fa-industry"></i> Japan: 9.9%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Tableau Story Section -->
+<section class="story-section" id="story">
+    <div class="section-container">
+        <div class="section-header">
+            <span class="section-tag"><i class="fa-solid fa-book-open"></i> Storytelling Narrative</span>
+            <h2 class="section-title">Global EV Market Evolution (7-Scene Story)</h2>
+            <p class="section-desc">A guided analytical journey through global fleet expansion, technological rivalries, and environmental dividends.</p>
+        </div>
+        <div class="story-tabs-container">
+            <div class="story-nav" id="storyNav">
+                <button class="story-tab active" data-scene="1">1. Market Overview</button>
+                <button class="story-tab" data-scene="2">2. Category Dynamics</button>
+                <button class="story-tab" data-scene="3">3. OEM Competition</button>
+                <button class="story-tab" data-scene="4">4. Battery Chemistry</button>
+                <button class="story-tab" data-scene="5">5. Sales Trajectory</button>
+                <button class="story-tab" data-scene="6">6. Global Assembly</button>
+                <button class="story-tab" data-scene="7">7. Strategic ROI</button>
+            </div>
+            <div class="story-content-card" id="storyContentCard">
+                <div class="scene-header">
+                    <span class="scene-badge" id="sceneBadge">Scene 1 of 7</span>
+                    <h3 id="sceneTitle">Global EV Market Overview</h3>
+                </div>
+                <div class="scene-body" id="sceneBody">
+                    <p>
+                        The global electric vehicle landscape has reached mature commercial scale across 299,999 evaluated vehicle records, spanning 17,980 commercial models, 200 automotive manufacturers, and 10 manufacturing nations. With cumulative annual fleet sales exceeding 2.34 billion units and an average certified driving range of 324.5 km, electrification is penetrating every consumer, commercial, and micro-mobility segment.
+                    </p>
+                </div>
+                <div class="scene-stats" id="sceneStats">
+                    <div class="stat-pill"><i class="fa-solid fa-car"></i> 299,999 Fleet Records</div>
+                    <div class="stat-pill"><i class="fa-solid fa-industry"></i> 200 Global OEMs</div>
+                    <div class="stat-pill"><i class="fa-solid fa-bolt"></i> 324.5 km Avg Range</div>
+                    <div class="stat-pill"><i class="fa-solid fa-chart-line"></i> 2.34B Annual Sales</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Key Findings Summary Cards -->
+<section class="findings-section" id="findings">
+    <div class="section-container">
+        <div class="section-header text-center">
+            <span class="section-tag"><i class="fa-solid fa-magnifying-glass-chart"></i> Research Findings</span>
+            <h2 class="section-title">Core Analytical Discoveries &amp; Business Takeaways</h2>
+            <p class="section-desc">Empirically grounded findings derived from comprehensive statistical modeling of the 300,000-vehicle fleet.</p>
+        </div>
+        <div class="findings-grid">
+            <div class="finding-card">
+                <div class="finding-num">01</div>
+                <h4>Commercial Transit is the Top Decarbonization Lever</h4>
+                <p>
+                    Electric Buses (9.04 tons CO2/yr) and Freight Trucks (8.99 tons CO2/yr) displace nearly <strong>3x the carbon emissions</strong> of standard passenger vehicles (3.04 tons/yr). Electrifying municipal and freight transit yields the highest return on climate capital.
+                </p>
+                <div class="finding-stat">9.04 t/yr CO2 Abatement</div>
+            </div>
+            <div class="finding-card">
+                <div class="finding-num">02</div>
+                <h4>Battery Capacity Dictates Capital Cost</h4>
+                <p>
+                    Traction battery gross capacity exhibits a decisive <strong>r = +0.8373 correlation with retail price</strong> ($ USD). Installed kilowatt-hours represent the primary cost component in vehicle manufacturing, underscoring battery pack economics as the core battleground for OEM margins.
+                </p>
+                <div class="finding-stat">r = +0.8373 Price Correlation</div>
+            </div>
+            <div class="finding-card">
+                <div class="finding-num">03</div>
+                <h4>The NMC vs LFP Cathode Chemistry Duopoly</h4>
+                <p>
+                    NMC (33.84%) and LFP (32.05%) collectively command <strong>65.89% of global vehicles</strong>. LFP delivers a 39% superior cycle durability (2,501 cycles) at lower 5-year degradation (10.1%), while Solid-State delivers 2,998 cycles in premium models.
+                </p>
+                <div class="finding-stat">65.89% Duopoly Market Share</div>
+            </div>
+            <div class="finding-card">
+                <div class="finding-num">04</div>
+                <h4>Asia Commands 50.1% of Vehicle Assembly</h4>
+                <p>
+                    Global manufacturing is multi-polar, but Asian industrial clusters (India 10.1%, South Korea 10.1%, China 10.1%, Vietnam 10.0%, Japan 9.9%) collectively assemble <strong>50.13% of all EV models</strong>, outpacing Europe (29.9%) and North America (10.0%).
+                </p>
+                <div class="finding-stat">50.13% Asian Assembly Share</div>
+            </div>
+            <div class="finding-card">
+                <div class="finding-num">05</div>
+                <h4>Universal Customer Satisfaction Clustering</h4>
+                <p>
+                    Across all 15 vehicle categories, average customer satisfaction remains tightly clustered between <strong>4.085★ and 4.094★ out of 5.0</strong>. Budget two-wheelers satisfy commuter utility expectations just as effectively as six-figure luxury sedans satisfy executive luxury.
+                </p>
+                <div class="finding-stat">4.09 / 5.0 ★ Fleet Average</div>
+            </div>
+            <div class="finding-card">
+                <div class="finding-num">06</div>
+                <h4>Robust Multi-Year Sales Continuity</h4>
+                <p>
+                    Fleet sales across model vintages (2018 through 2026) exhibit consistent annual volumes between <strong>255M and 265M units</strong> per year. Peak volume was registered in 2019 (265.7M) and matched in 2024 (264.9M), confirming structural adoption permanence.
+                </p>
+                <div class="finding-stat">265.7M Units Vintage Peak</div>
+            </div>
+        </div>
+        <div class="text-center mt-4">
+            <a href="{{ url_for('findings_view') }}" class="btn-primary-md">
+                <i class="fa-solid fa-file-lines"></i> View Detailed 14-Topic Research Report
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Technologies Used -->
+<section class="tech-section">
+    <div class="section-container">
+        <div class="section-header text-center">
+            <span class="section-tag"><i class="fa-solid fa-laptop-code"></i> Engineering &amp; BI Stack</span>
+            <h2 class="section-title">Technologies &amp; Architecture</h2>
+            <p class="section-desc">Built with industry-standard data engineering, visualization, and cloud web frameworks.</p>
+        </div>
+        <div class="tech-grid">
+            <div class="tech-card">
+                <div class="tech-icon"><i class="fa-brands fa-python"></i></div>
+                <h4>Python 3.11</h4>
+                <p>Core computation, data wrangling, IQR outlier auditing, and reproducible scripting.</p>
+            </div>
+            <div class="tech-card">
+                <div class="tech-icon"><i class="fa-solid fa-table"></i></div>
+                <h4>Pandas &amp; NumPy</h4>
+                <p>High-throughput memory processing across 300,000 records, aggregation, and imputation.</p>
+            </div>
+            <div class="tech-card">
+                <div class="tech-icon"><i class="fa-solid fa-chart-simple"></i></div>
+                <h4>Tableau Public 2026</h4>
+                <p>Enterprise BI dashboarding, dual-axis donut charts, geographic mapping, and storytelling.</p>
+            </div>
+            <div class="tech-card">
+                <div class="tech-icon"><i class="fa-solid fa-server"></i></div>
+                <h4>Flask Framework</h4>
+                <p>Python web application backend, RESTful API endpoints, and dynamic template rendering.</p>
+            </div>
+            <div class="tech-card">
+                <div class="tech-icon"><i class="fa-brands fa-html5"></i></div>
+                <h4>HTML5 &amp; CSS3</h4>
+                <p>Modern responsive front-end, CSS Flexbox/Grid, custom typography, and accessible design.</p>
+            </div>
+            <div class="tech-card">
+                <div class="tech-icon"><i class="fa-solid fa-code"></i></div>
+                <h4>VS Code</h4>
+                <p>Primary integrated development environment, Git version tracking, and terminal execution.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Project Section -->
+<section class="about-section" id="about">
+    <div class="section-container">
+        <div class="about-card">
+            <div class="about-header">
+                <span class="section-tag"><i class="fa-solid fa-graduation-cap"></i> Project Governance</span>
+                <h2>About This Project</h2>
+            </div>
+            <div class="about-body">
+                <p>
+                    <strong>"ELECTRIC VEHICLE MARKET PERFORMANCE &amp; INSIGHTS"</strong> is an advanced data intelligence capstone developed to analyze global electric mobility trends across technical, financial, and environmental dimensions.
+                </p>
+                <div class="governance-grid">
+                    <div class="gov-item">
+                        <strong>Project Title:</strong>
+                        <span>Electric Vehicle Market Performance &amp; Insights</span>
+                    </div>
+                    <div class="gov-item">
+                        <strong>Role:</strong>
+                        <span>Senior Data Analyst, BI Specialist &amp; Flask Developer</span>
+                    </div>
+                    <div class="gov-item">
+                        <strong>Dataset Provenance:</strong>
+                        <span>300,000 Records (Train &amp; Test Unified), 38 Columns</span>
+                    </div>
+                    <div class="gov-item">
+                        <strong>Audit Status:</strong>
+                        <span>Phase 1, Phase 2, &amp; Phase 3 Fully Certified</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Embed URL Configuration Modal -->
+<div class="modal-overlay" id="configModal">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3><i class="fa-solid fa-gear"></i> Configure Tableau Public Embed</h3>
+            <button class="modal-close" id="modalClose">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>Paste the public URL of your published Tableau Public dashboard to embed it live:</p>
+            <div class="form-group">
+                <label for="inputDashboardUrl">Tableau Public Dashboard URL:</label>
+                <input type="text" id="inputDashboardUrl" placeholder="https://public.tableau.com/views/YourWorkbook/Dashboard" value="{{ tableau.dashboard_url }}">
+            </div>
+            <div class="form-group">
+                <label for="inputStoryUrl">Tableau Public Story URL (Optional):</label>
+                <input type="text" id="inputStoryUrl" placeholder="https://public.tableau.com/views/YourWorkbook/Story" value="{{ tableau.story_url }}">
+            </div>
+            <p class="form-note">
+                <i class="fa-solid fa-lightbulb"></i> <em>Tip: Once updated, the embedded `<tableau-viz>` container will immediately render your live interactive visualizations.</em>
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary-sm" id="btnCancelModal">Cancel</button>
+            <button class="btn-primary-sm" id="btnSaveTableauUrl"><i class="fa-solid fa-floppy-disk"></i> Save &amp; Update View</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

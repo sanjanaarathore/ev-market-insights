@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Vehicle Segment Spec Comparator | EV Market Performance & Insights{% endblock %}
+
+{% block content %}
+<section class="page-header-section">
+    <div class="section-container">
+        <span class="section-tag"><i class="fa-solid fa-code-compare"></i> Interactive Analytics</span>
+        <h1 class="page-title">Vehicle Segment Specification Comparator</h1>
+        <p class="page-subtitle">Benchmark technical, economic, and environmental metrics side-by-side across EV market segments.</p>
+    </div>
+</section>
+
+<section class="comparator-section">
+    <div class="section-container">
+        <!-- Controls Box -->
+        <div class="comparator-controls-card">
+            <div class="selector-col">
+                <label for="selectCat1"><i class="fa-solid fa-car"></i> Select Segment 1:</label>
+                <select id="selectCat1" class="form-select">
+                    {% for cat in categories %}
+                    <option value="{{ cat }}" {% if cat == 'Sedan' %}selected{% endif %}>{{ cat }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="vs-badge">VS</div>
+            <div class="selector-col">
+                <label for="selectCat2"><i class="fa-solid fa-car-side"></i> Select Segment 2:</label>
+                <select id="selectCat2" class="form-select">
+                    {% for cat in categories %}
+                    <option value="{{ cat }}" {% if cat == 'Compact SUV' %}selected{% endif %}>{{ cat }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="btn-col">
+                <button id="btnRunCompare" class="btn-primary-md">
+                    <i class="fa-solid fa-play"></i> Compare Specifications
+                </button>
+            </div>
+        </div>
+
+        <!-- Comparison Results Grid -->
+        <div class="compare-results-grid" id="compareGrid">
+            <div class="compare-side-card" id="cardSeg1">
+                <div class="card-head">
+                    <span class="seg-badge">Segment 1</span>
+                    <h3 id="nameSeg1">Sedan</h3>
+                    <p class="seg-count" id="countSeg1">25,851 Models Evaluated</p>
+                </div>
+                <div class="metric-row">
+                    <span class="m-label"><i class="fa-solid fa-gauge-high"></i> Certified Range:</span>
+                    <strong class="m-val" id="rangeSeg1">429.4 km</strong>
+                </div>
+                <div class="metric-row">
+                    <span class="m-label"><i class="fa-solid fa-car-battery"></i> Battery Capacity:</span>
+                    <strong class="m-val" id="batSeg1">61.9 kWh</strong>
+                </div>
+                <div class="metric-row">
+                    <span class="m-label"><i class="fa-solid fa-tag"></i> Average Price:</span>
+                    <strong class="m-val" id="priceSeg1">$42,512</strong>
+                </div>
+                <div class="metric-row">
+                    <span class="m-label"><i class="fa-solid fa-bolt"></i> Efficiency:</span>
+                    <strong class="m-val" id="effSeg1">146.4 Wh/km</strong>
+                </div>
+                <div class="metric-row">
+                    <span class="m-label"><i class="fa-solid fa-stopwatch"></i> 0-100 km/h:</span>
+                    <strong class="m-val" id="accSeg1">7.42 s</strong>
+                </div>
+                <div class="metric-row">
+                    <span class="m-label"><i class="fa-solid fa-star"></i> Customer Rating:</span>
+                    <strong class="m-val" id="ratSeg1">4.09 / 5.0 ★</strong>
+                </div>
+                <div class="metric-row">
+                    <span class="m-label"><i class="fa-solid fa-leaf"></i> Annual CO2 Saved:</span>
+                    <strong class="m-val" id="co2Seg1">3.04 tons/yr</strong>
+                </div>
+            </div>
+
+            <div class="compare-side-card" id="cardSeg2">
+                <div class="card-head">
+                    <span class="seg-badge">Segment 2</span>
+                    <h3 id="nameSeg2">Compact SUV</h3>
+                    <p class="seg-count" id="countSeg2">25,706 Models Evaluated</p>
+                </div>
+                <div class="metric-row">
+                    <span class="m-label"><i class="fa-solid fa-gauge-high"></i> Certified Range:</span>
+                    <strong class="m-val" id="rangeSeg2">369.6 km</strong>
+                </div>
+                <div class="metric-row">
+                    <span class="m-label"><i class="fa-solid fa-car-battery"></i> Battery Capacity:</span>
+                    <strong class="m-val" id="batSeg2">55.0 kWh</strong>
+                </div>
+                <div class="metric-row">
+                    <span class="m-label"><i class="fa-solid fa-tag"></i> Average Price:</span>
+                    <strong class="m-val" id="priceSeg2">$36,491</strong>
+                </div>
+                <div class="metric-row">
+                    <span class="m-label"><i class="fa-solid fa-bolt"></i> Efficiency:</span>
+                    <strong class="m-val" id="effSeg2">151.1 Wh/km</strong>
+                </div>
+                <div class="metric-row">
+                    <span class="m-label"><i class="fa-solid fa-stopwatch"></i> 0-100 km/h:</span>
+                    <strong class="m-val" id="accSeg2">8.51 s</strong>
+                </div>
+                <div class="metric-row">
+                    <span class="m-label"><i class="fa-solid fa-star"></i> Customer Rating:</span>
+                    <strong class="m-val" id="ratSeg2">4.09 / 5.0 ★</strong>
+                </div>
+                <div class="metric-row">
+                    <span class="m-label"><i class="fa-solid fa-leaf"></i> Annual CO2 Saved:</span>
+                    <strong class="m-val" id="co2Seg2">3.05 tons/yr</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
