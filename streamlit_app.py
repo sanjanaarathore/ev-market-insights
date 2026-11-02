@@ -1,13 +1,15 @@
 """
 ========================================================================================
-ELECTRIC VEHICLE MARKET PERFORMANCE & INSIGHTS - STREAMLIT ANALYTICS PLATFORM
+VOLTVISION ANALYTICS - ELECTRIC VEHICLE MARKET PERFORMANCE & INSIGHTS
 ========================================================================================
 Interactive Business Intelligence Dashboard, Exploratory Data Analysis & Segment Comparator
 Fleet Size: 299,999 Validated Global EV Records | 200 OEMs | 15 Vehicle Categories
+Platform: Streamlit Community Cloud & Tableau Public
 ========================================================================================
 """
 
 import os
+import sys
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -18,7 +20,7 @@ import plotly.graph_objects as go
 # PAGE CONFIGURATION
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="EV Market Performance & Insights",
+    page_title="VoltVision Analytics - Global EV Market Insights",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -29,7 +31,6 @@ st.set_page_config(
 # -----------------------------------------------------------------------------
 st.markdown("""
 <style>
-    /* Global Styles */
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
     
     html, body, [class*="css"] {
@@ -42,9 +43,17 @@ st.markdown("""
         padding: 2.2rem 2.5rem;
         border-radius: 16px;
         color: white;
-        margin-bottom: 2rem;
+        margin-bottom: 1.8rem;
         box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
         border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .hero-tagline {
+        color: #2dd4bf;
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 0.3rem;
     }
     .hero-title {
         font-size: 2.3rem;
@@ -81,7 +90,7 @@ st.markdown("""
     .kpi-card {
         background: #ffffff;
         border-radius: 14px;
-        padding: 1.2rem 1.4rem;
+        padding: 1.1rem 1.3rem;
         border: 1px solid #e2e8f0;
         box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
         transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -92,14 +101,14 @@ st.markdown("""
         box-shadow: 0 10px 15px -3px rgba(0,0,0,0.08);
     }
     .kpi-label {
-        font-size: 0.78rem;
+        font-size: 0.75rem;
         text-transform: uppercase;
         font-weight: 700;
         color: #64748b;
         letter-spacing: 0.5px;
     }
     .kpi-value {
-        font-size: 1.85rem;
+        font-size: 1.8rem;
         font-weight: 800;
         color: #0f172a;
         margin: 0.25rem 0;
@@ -123,7 +132,7 @@ st.markdown("""
         box-shadow: 0 2px 4px rgba(0,0,0,0.03);
     }
     .finding-title {
-        font-size: 1.1rem;
+        font-size: 1.05rem;
         font-weight: 700;
         color: #0f172a;
         margin-bottom: 0.4rem;
@@ -136,47 +145,108 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# DATA LOADING (CACHED)
+# ROBUST DATASET RESOLUTION (MEMORY-OPTIMIZED)
 # -----------------------------------------------------------------------------
-@st.cache_data(show_spinner="Loading verified global EV fleet records...")
-def load_data():
-    candidate_paths = [
+def locate_dataset_file():
+    """Searches across repository tree to reliably locate cleaned_ev_dataset.csv."""
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    cwd = os.getcwd()
+    
+    search_paths = [
+        os.path.join(script_dir, "Electric_Vehicle_Market_Insights", "Dataset", "Cleaned", "cleaned_ev_dataset.csv"),
+        os.path.join(script_dir, "Dataset", "Cleaned", "cleaned_ev_dataset.csv"),
+        os.path.join(script_dir, "cleaned_ev_dataset.csv"),
+        os.path.join(cwd, "Electric_Vehicle_Market_Insights", "Dataset", "Cleaned", "cleaned_ev_dataset.csv"),
+        os.path.join(cwd, "Dataset", "Cleaned", "cleaned_ev_dataset.csv"),
+        os.path.join(cwd, "cleaned_ev_dataset.csv"),
         "Electric_Vehicle_Market_Insights/Dataset/Cleaned/cleaned_ev_dataset.csv",
         "Dataset/Cleaned/cleaned_ev_dataset.csv",
-        "cleaned_ev_dataset.csv",
-        "../Dataset/Cleaned/cleaned_ev_dataset.csv"
+        "cleaned_ev_dataset.csv"
     ]
-    for p in candidate_paths:
-        if os.path.exists(p):
-            df = pd.read_csv(p)
-            # Ensure model_year is integer
-            if 'model_year' in df.columns:
-                df['model_year'] = df['model_year'].astype(int)
-            return df
+    
+    for path in search_paths:
+        if os.path.isfile(path):
+            return path
             
-    st.error("Dataset file 'cleaned_ev_dataset.csv' not found. Please verify project directory.")
-    return pd.DataFrame()
+    # Recursive search if not in standard locations
+    for base in [cwd, script_dir]:
+        for root, _, files in os.walk(base):
+            if "cleaned_ev_dataset.csv" in files:
+                return os.path.join(root, "cleaned_ev_dataset.csv")
+                
+    return None
 
-df_raw = load_data()
+@st.cache_data(show_spinner="Loading and optimizing global EV fleet records...")
+def load_and_optimize_data():
+    csv_path = locate_dataset_file()
+    if not csv_path:
+        st.error("⚠️ Dataset `cleaned_ev_dataset.csv` could not be located in repository.")
+        st.stop()
+        
+    try:
+        df = pd.read_csv(csv_path, low_memory=False)
+        
+        # Ensure column alias compatibility
+        if 'price_usd' in df.columns and 'base_price_usd' not in df.columns:
+            df['base_price_usd'] = df['price_usd']
+        elif 'base_price_usd' in df.columns and 'price_usd' not in df.columns:
+            df['price_usd'] = df['base_price_usd']
+            
+        if 'charging_dc_fast_time_min' in df.columns and 'charging_time_dc_fast_mins' not in df.columns:
+            df['charging_time_dc_fast_mins'] = df['charging_dc_fast_time_min']
+        elif 'charging_time_dc_fast_mins' in df.columns and 'charging_dc_fast_time_min' not in df.columns:
+            df['charging_dc_fast_time_min'] = df['charging_time_dc_fast_mins']
+            
+        # Memory optimization dtypes
+        dtype_dict = {
+            'vehicle_id': 'string',
+            'manufacturer': 'category',
+            'model_name': 'string',
+            'model_year': 'int16',
+            'category': 'category',
+            'battery_type': 'category',
+            'range_km': 'float32',
+            'battery_capacity_kwh': 'float32',
+            'price_usd': 'float32',
+            'base_price_usd': 'float32',
+            'efficiency_wh_per_km': 'float32',
+            'customer_rating': 'float32',
+            'manufacturing_country': 'category',
+            'annual_sales_units': 'float32',
+            'co2_saved_tons_per_year': 'float32',
+            'charging_dc_fast_time_min': 'float32',
+            'resale_value_pct_3yr': 'float32'
+        }
+        
+        for col, dt in dtype_dict.items():
+            if col in df.columns:
+                try:
+                    df[col] = df[col].astype(dt)
+                except Exception:
+                    pass
+                    
+        return df
+    except Exception as e:
+        st.error(f"Error loading dataset: {e}")
+        st.stop()
 
-if df_raw.empty:
-    st.stop()
+df_raw = load_and_optimize_data()
 
 # -----------------------------------------------------------------------------
 # SIDEBAR FILTERS & CONTROLS
 # -----------------------------------------------------------------------------
-st.sidebar.image("https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=400&auto=format&fit=crop&q=80", use_container_width=True)
-st.sidebar.title("⚡ Navigation & Filters")
+st.sidebar.markdown("### ⚡ **VoltVision Analytics**")
+st.sidebar.caption("Global EV Performance & Market Intelligence")
 
 nav_choice = st.sidebar.radio(
-    "Go To Section:",
+    "Navigation Menu:",
     [
         "📊 Executive KPI Dashboard",
-        "📈 Plotly Visualizations",
+        "📈 Interactive Visualizations",
         "📑 Tableau Public Embedding",
         "⚖️ Vehicle Segment Comparator",
         "💡 Key Analytical Findings",
-        "📁 Dataset Explorer"
+        "📁 Dataset Explorer & Export"
     ]
 )
 
@@ -190,6 +260,8 @@ selected_categories = st.sidebar.multiselect(
     options=all_categories,
     default=all_categories
 )
+if not selected_categories:
+    selected_categories = all_categories
 
 # Filter: Battery Technologies
 all_batteries = sorted(df_raw['battery_type'].dropna().unique().tolist())
@@ -198,10 +270,15 @@ selected_batteries = st.sidebar.multiselect(
     options=all_batteries,
     default=all_batteries
 )
+if not selected_batteries:
+    selected_batteries = all_batteries
 
 # Filter: Model Year Range
-min_yr = int(df_raw['model_year'].min())
-max_yr = int(df_raw['model_year'].max())
+min_yr = int(df_raw['model_year'].min()) if not df_raw.empty else 2018
+max_yr = int(df_raw['model_year'].max()) if not df_raw.empty else 2025
+if min_yr >= max_yr:
+    max_yr = min_yr + 1
+
 selected_year_range = st.sidebar.slider(
     "Model Year Span:",
     min_value=min_yr,
@@ -211,8 +288,11 @@ selected_year_range = st.sidebar.slider(
 )
 
 # Filter: Price Range
-min_price = float(df_raw['base_price_usd'].min())
-max_price = float(df_raw['base_price_usd'].max())
+min_price = float(df_raw['price_usd'].min()) if not df_raw.empty else 15000.0
+max_price = float(df_raw['price_usd'].max()) if not df_raw.empty else 200000.0
+if min_price >= max_price:
+    max_price = min_price + 1000.0
+
 selected_price_range = st.sidebar.slider(
     "Base MSRP Range ($USD):",
     min_value=int(min_price),
@@ -227,17 +307,17 @@ filtered_df = df_raw[
     (df_raw['battery_type'].isin(selected_batteries)) &
     (df_raw['model_year'] >= selected_year_range[0]) &
     (df_raw['model_year'] <= selected_year_range[1]) &
-    (df_raw['base_price_usd'] >= selected_price_range[0]) &
-    (df_raw['base_price_usd'] <= selected_price_range[1])
+    (df_raw['price_usd'] >= selected_price_range[0]) &
+    (df_raw['price_usd'] <= selected_price_range[1])
 ]
 
 # Reset Filters Note
 st.sidebar.caption(f"Showing **{len(filtered_df):,}** of **{len(df_raw):,}** total vehicles ({len(filtered_df)/len(df_raw)*100:.1f}%).")
 st.sidebar.markdown("---")
 st.sidebar.markdown("""
-**Project Title:** Electric Vehicle Market Performance & Insights  
+**Platform:** VoltVision Analytics  
 **Analyst:** Sanjana Rathore  
-**Platform:** Tableau Public & Streamlit  
+**Target:** Global EV Ecosystem  
 """)
 
 # -----------------------------------------------------------------------------
@@ -245,6 +325,7 @@ st.sidebar.markdown("""
 # -----------------------------------------------------------------------------
 st.markdown("""
 <div class="hero-banner">
+    <div class="hero-tagline">⚡ VOLTVISION ANALYTICS PLATFORM</div>
     <div class="hero-title">ELECTRIC VEHICLE MARKET PERFORMANCE & INSIGHTS</div>
     <div class="hero-subtitle">A Data-Driven Exploration of Global EV Manufacturing, Battery Technologies, and Market Trends</div>
     <div class="hero-badge-container">
@@ -263,19 +344,21 @@ st.markdown("""
 kpi1, kpi2, kpi3, kpi4, kpi5, kpi6 = st.columns(6)
 
 with kpi1:
+    total_models = filtered_df['model_name'].nunique() if not filtered_df.empty else 0
     st.markdown(f"""
     <div class="kpi-card">
         <div class="kpi-label">Total EV Models</div>
-        <div class="kpi-value">{filtered_df['model_name'].nunique():,}</div>
+        <div class="kpi-value">{total_models:,}</div>
         <div class="kpi-sub">{len(filtered_df):,} Fleet Records</div>
     </div>
     """, unsafe_allow_html=True)
 
 with kpi2:
+    total_oems = filtered_df['manufacturer'].nunique() if not filtered_df.empty else 0
     st.markdown(f"""
     <div class="kpi-card">
         <div class="kpi-label">Active OEMs</div>
-        <div class="kpi-value">{filtered_df['manufacturer'].nunique():,}</div>
+        <div class="kpi-value">{total_oems:,}</div>
         <div class="kpi-sub">Global Automakers</div>
     </div>
     """, unsafe_allow_html=True)
@@ -332,7 +415,7 @@ if nav_choice == "📊 Executive KPI Dashboard":
     
     with col_left:
         # Category Horizontal Bar Chart
-        cat_df = filtered_df.groupby('category').agg(
+        cat_df = filtered_df.groupby('category', observed=True).agg(
             model_count=('vehicle_id', 'count'),
             total_sales=('annual_sales_units', 'sum')
         ).reset_index().sort_values('model_count', ascending=True)
@@ -353,7 +436,7 @@ if nav_choice == "📊 Executive KPI Dashboard":
         
     with col_right:
         # Battery Technology Donut / Pie
-        batt_df = filtered_df.groupby('battery_type')['vehicle_id'].count().reset_index()
+        batt_df = filtered_df.groupby('battery_type', observed=True)['vehicle_id'].count().reset_index()
         fig_batt = px.pie(
             batt_df,
             names='battery_type',
@@ -377,7 +460,7 @@ if nav_choice == "📊 Executive KPI Dashboard":
     
     with row2_col1:
         # Annual Sales Trend by Model Year
-        sales_trend = filtered_df.groupby('model_year')['annual_sales_units'].sum().reset_index()
+        sales_trend = filtered_df.groupby('model_year', observed=True)['annual_sales_units'].sum().reset_index()
         fig_trend = px.line(
             sales_trend,
             x='model_year',
@@ -392,7 +475,7 @@ if nav_choice == "📊 Executive KPI Dashboard":
         
     with row2_col2:
         # Top 10 Manufacturers by Models
-        top_oems = filtered_df.groupby('manufacturer')['vehicle_id'].count().reset_index().sort_values('vehicle_id', ascending=False).head(10)
+        top_oems = filtered_df.groupby('manufacturer', observed=True)['vehicle_id'].count().reset_index().sort_values('vehicle_id', ascending=False).head(10)
         fig_oem = px.bar(
             top_oems,
             x='vehicle_id',
@@ -407,9 +490,9 @@ if nav_choice == "📊 Executive KPI Dashboard":
         st.plotly_chart(fig_oem, use_container_width=True)
 
 # -----------------------------------------------------------------------------
-# SECTION 2: PLOTLY VISUALIZATIONS (TABLEAU REPRODUCTIONS)
+# SECTION 2: INTERACTIVE VISUALIZATIONS
 # -----------------------------------------------------------------------------
-elif nav_choice == "📈 Plotly Visualizations":
+elif nav_choice == "📈 Interactive Visualizations":
     st.subheader("📈 High-Fidelity Interactive Visualizations")
     st.markdown("Direct implementations of the 7 Tableau Public visualization specifications.")
     
@@ -422,7 +505,7 @@ elif nav_choice == "📈 Plotly Visualizations":
     
     with tab_v1:
         # Rating Bar Chart with 4.09 Reference Line
-        rating_df = filtered_df.groupby('category')['customer_rating'].mean().reset_index().sort_values('customer_rating', ascending=False)
+        rating_df = filtered_df.groupby('category', observed=True)['customer_rating'].mean().reset_index().sort_values('customer_rating', ascending=False)
         fig_rating = px.bar(
             rating_df,
             x='category',
@@ -438,8 +521,8 @@ elif nav_choice == "📈 Plotly Visualizations":
         st.plotly_chart(fig_rating, use_container_width=True)
         
     with tab_v2:
-        # Country Choropleth / Bar
-        country_df = filtered_df.groupby('manufacturing_country')['vehicle_id'].count().reset_index().sort_values('vehicle_id', ascending=False)
+        # Country Distribution Bar
+        country_df = filtered_df.groupby('manufacturing_country', observed=True)['vehicle_id'].count().reset_index().sort_values('vehicle_id', ascending=False)
         fig_country = px.bar(
             country_df,
             x='manufacturing_country',
@@ -454,7 +537,7 @@ elif nav_choice == "📈 Plotly Visualizations":
         st.plotly_chart(fig_country, use_container_width=True)
         
     with tab_v3:
-        # Scatter: Range vs Battery Capacity colored by Price
+        # Scatter: Range vs Battery Capacity colored by Price (Sampled for responsiveness)
         sample_size = min(3000, len(filtered_df))
         sample_df = filtered_df.sample(sample_size, random_state=42) if len(filtered_df) > 3000 else filtered_df
         fig_scatter = px.scatter(
@@ -462,17 +545,17 @@ elif nav_choice == "📈 Plotly Visualizations":
             x='battery_capacity_kwh',
             y='range_km',
             color='category',
-            size='base_price_usd',
+            size='price_usd',
             hover_data=['model_name', 'manufacturer', 'battery_type', 'efficiency_wh_per_km'],
             title=f"<b>Engineering Frontier: Battery Capacity vs Range (Sampled {sample_size:,} Records)</b>",
-            labels={'battery_capacity_kwh': 'Battery Capacity (kWh)', 'range_km': 'Driving Range (km)', 'base_price_usd': 'Base MSRP ($)'}
+            labels={'battery_capacity_kwh': 'Battery Capacity (kWh)', 'range_km': 'Driving Range (km)', 'price_usd': 'Base MSRP ($)'}
         )
         fig_scatter.update_layout(height=520)
         st.plotly_chart(fig_scatter, use_container_width=True)
         
     with tab_v4:
         # CO2 displacement by Category
-        co2_df = filtered_df.groupby('category')['co2_saved_tons_per_year'].mean().reset_index().sort_values('co2_saved_tons_per_year', ascending=False)
+        co2_df = filtered_df.groupby('category', observed=True)['co2_saved_tons_per_year'].mean().reset_index().sort_values('co2_saved_tons_per_year', ascending=False)
         fig_co2 = px.bar(
             co2_df,
             x='category',
@@ -491,14 +574,12 @@ elif nav_choice == "📈 Plotly Visualizations":
 # -----------------------------------------------------------------------------
 elif nav_choice == "📑 Tableau Public Embedding":
     st.subheader("📑 Tableau Public Live Embedding Portal")
-    st.markdown("""
-    This section integrates the Tableau Public dashboard directly into Streamlit via the official **Tableau JavaScript Embedding API v3**.
-    """)
+    st.markdown("Integrates the Tableau Public dashboard directly into Streamlit via official embedding.")
     
     col_input, col_btn = st.columns([4, 1])
     with col_input:
         tableau_url = st.text_input(
-            "Enter Tableau Public Published URL:",
+            "Tableau Public Published URL:",
             value="https://public.tableau.com/views/ElectricVehicleMarketPerformance/Dashboard"
         )
     with col_btn:
@@ -506,9 +587,8 @@ elif nav_choice == "📑 Tableau Public Embedding":
         st.write("")
         st.link_button("🌐 Open in Tableau Public", tableau_url)
         
-    st.info("ℹ️ **Tableau Public Integration Note:** Once you publish your completed `.twbx` workbook to Tableau Public, paste your public URL above to immediately preview the live, interactive cloud visualization within this dashboard.")
+    st.info("ℹ️ **Tableau Public Integration:** Paste your published Tableau Public URL above to immediately preview the live cloud visualization within this dashboard.")
     
-    # Official Tableau iframe embedding
     embed_html = f"""
     <div style="width: 100%; border-radius: 12px; overflow: hidden; border: 1px solid #cbd5e1; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
         <iframe src="{tableau_url}?:showVizHome=no&:embed=true"
@@ -541,9 +621,9 @@ elif nav_choice == "⚖️ Vehicle Segment Comparator":
         ("Fleet Sample Size", f"{len(df_a):,} units", f"{len(df_b):,} units"),
         ("Avg Driving Range", f"{df_a['range_km'].mean():.1f} km", f"{df_b['range_km'].mean():.1f} km"),
         ("Avg Battery Capacity", f"{df_a['battery_capacity_kwh'].mean():.1f} kWh", f"{df_b['battery_capacity_kwh'].mean():.1f} kWh"),
-        ("Avg Base MSRP", f"${df_a['base_price_usd'].mean():,.0f}", f"${df_b['base_price_usd'].mean():,.0f}"),
+        ("Avg Base MSRP", f"${df_a['price_usd'].mean():,.0f}", f"${df_b['price_usd'].mean():,.0f}"),
         ("Energy Efficiency", f"{df_a['efficiency_wh_per_km'].mean():.1f} Wh/km", f"{df_b['efficiency_wh_per_km'].mean():.1f} Wh/km"),
-        ("Avg Fast Charging Time", f"{df_a['charging_time_dc_fast_mins'].mean():.1f} mins", f"{df_b['charging_time_dc_fast_mins'].mean():.1f} mins"),
+        ("Avg Fast Charging Time", f"{df_a['charging_dc_fast_time_min'].mean():.1f} mins", f"{df_b['charging_dc_fast_time_min'].mean():.1f} mins"),
         ("Annual CO2 Displaced", f"{df_a['co2_saved_tons_per_year'].mean():.2f} tons/yr", f"{df_b['co2_saved_tons_per_year'].mean():.2f} tons/yr"),
         ("Avg Customer Rating", f"{df_a['customer_rating'].mean():.2f} ★", f"{df_b['customer_rating'].mean():.2f} ★"),
         ("3-Year Resale Value", f"{df_a['resale_value_pct_3yr'].mean():.1f}%", f"{df_b['resale_value_pct_3yr'].mean():.1f}%")
@@ -558,14 +638,14 @@ elif nav_choice == "⚖️ Vehicle Segment Comparator":
         cat_a: [
             df_a['range_km'].mean(),
             df_a['battery_capacity_kwh'].mean(),
-            df_a['charging_time_dc_fast_mins'].mean(),
+            df_a['charging_dc_fast_time_min'].mean(),
             df_a['resale_value_pct_3yr'].mean(),
             df_a['co2_saved_tons_per_year'].mean() * 10
         ],
         cat_b: [
             df_b['range_km'].mean(),
             df_b['battery_capacity_kwh'].mean(),
-            df_b['charging_time_dc_fast_mins'].mean(),
+            df_b['charging_dc_fast_time_min'].mean(),
             df_b['resale_value_pct_3yr'].mean(),
             df_b['co2_saved_tons_per_year'].mean() * 10
         ]
@@ -625,23 +705,13 @@ elif nav_choice == "💡 Key Analytical Findings":
 # -----------------------------------------------------------------------------
 # SECTION 6: DATASET EXPLORER
 # -----------------------------------------------------------------------------
-elif nav_choice == "📁 Dataset Explorer":
+elif nav_choice == "📁 Dataset Explorer & Export":
     st.subheader("📁 Production Dataset Explorer & Export")
     st.markdown("Search, inspect, and export the cleaned and validated Tableau-ready fleet records.")
     
     col_s, col_d = st.columns([3, 1])
     with col_s:
         search_query = st.text_input("Search Model Name or Manufacturer:", "")
-    with col_d:
-        st.write("")
-        st.write("")
-        csv_data = filtered_df.to_csv(index=False).encode('utf-8')
-        st.download_button(
-            label="📥 Download Filtered CSV",
-            data=csv_data,
-            file_name="filtered_ev_market_fleet.csv",
-            mime="text/csv"
-        )
         
     view_df = filtered_df
     if search_query:
@@ -650,10 +720,23 @@ elif nav_choice == "📁 Dataset Explorer":
             filtered_df['manufacturer'].str.contains(search_query, case=False, na=False)
         ]
         
+    with col_d:
+        st.write("")
+        st.write("")
+        # Export top 5,000 rows to ensure instantaneous download without memory lag
+        export_sample = view_df.head(5000)
+        csv_data = export_sample.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="📥 Export Sample CSV (5k rows)",
+            data=csv_data,
+            file_name="voltvision_ev_sample.csv",
+            mime="text/csv"
+        )
+        
     st.dataframe(
         view_df[[
             'vehicle_id', 'manufacturer', 'model_name', 'model_year', 'category',
-            'battery_type', 'range_km', 'battery_capacity_kwh', 'base_price_usd',
+            'battery_type', 'range_km', 'battery_capacity_kwh', 'price_usd',
             'efficiency_wh_per_km', 'customer_rating', 'manufacturing_country', 'annual_sales_units'
         ]].head(100),
         use_container_width=True
@@ -666,8 +749,7 @@ elif nav_choice == "📁 Dataset Explorer":
 st.markdown("---")
 st.markdown("""
 <div style="text-align: center; color: #64748b; font-size: 0.85rem; padding: 1rem 0;">
-    <strong>Electric Vehicle Market Performance & Insights</strong> | Developed with Streamlit, Plotly, Pandas & Tableau Public<br>
-    © 2026 Sanjana Rathore. Academic & Professional Deliverable.
+    <strong>VoltVision Analytics</strong> | Electric Vehicle Market Performance & Insights<br>
+    Developed with Streamlit, Plotly, Pandas & Tableau Public | © 2026 Sanjana Rathore
 </div>
 """, unsafe_allow_html=True)
-
